@@ -4,5 +4,6 @@ export interface IwriteOptions {
     outputDir: string;
     npmDir: string;
     exclude: string[];
+    minify: boolean;
 }
-export declare function writeNpmPkgSync(config: any, writeOptions: any): Promise<void>;
+export declare function writeNpmPkgSync(config: any, writeOptions: IwriteOptions): Promise<void>;

@@ -94,7 +94,8 @@ function resolveModulePath(npmpkgName, options) {
                 input: inputNpmPkgPath,
                 output: {
                     file: outputNpmPkgPath,
-                    format: 'umd',
+                    format: options.format || 'umd',
+                    strict: !!options.strict,
                     name: npmpkgName
                 }
             }, {
@@ -102,7 +103,8 @@ function resolveModulePath(npmpkgName, options) {
                 rootDir,
                 outputDir,
                 npmDir,
-                exclude
+                exclude,
+                minify: options.minify
             });
         }
         let relativeRequirePath = path_1.default

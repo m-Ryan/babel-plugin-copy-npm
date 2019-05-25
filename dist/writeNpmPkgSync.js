@@ -16,6 +16,7 @@ const path = require('path');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const fs_extra_1 = __importDefault(require("fs-extra"));
+const rollup_plugin_uglify_1 = require("rollup-plugin-uglify");
 function writeNpmPkgSync(config, writeOptions) {
     config = Object.assign({}, config, { onwarn: function (warning) {
             if (warning.code === 'THIS_IS_UNDEFINED') {
@@ -56,20 +57,20 @@ function writeNpmPkgSync(config, writeOptions) {
         ];
     }
     else {
-        config.plugins = [
-            nodeResolve(),
-            commonjs(),
-            babel({
-                presets: [
-                    [
-                        '@babel/env',
-                        {
-                            modules: false
-                        }
-                    ]
+        const babelOptions = {
+            presets: [
+                [
+                    '@babel/env',
+                    {
+                        modules: false
+                    }
                 ]
-            })
-        ];
+            ]
+        };
+        config.plugins = [nodeResolve(), commonjs(), babel(babelOptions)];
+    }
+    if (writeOptions.minify) {
+        config.plugins.push(rollup_plugin_uglify_1.uglify());
     }
     let output = config.output;
     let { file } = output;

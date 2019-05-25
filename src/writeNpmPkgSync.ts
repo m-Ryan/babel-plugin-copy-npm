@@ -4,14 +4,16 @@ const path = require('path');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 import fs from 'fs-extra';
+import { uglify } from 'rollup-plugin-uglify';
 export interface IwriteOptions {
 	deep: boolean;
 	rootDir: string;
 	outputDir: string;
 	npmDir: string;
 	exclude: string[];
+	minify: boolean;
 }
-export function writeNpmPkgSync(config, writeOptions) {
+export function writeNpmPkgSync(config, writeOptions: IwriteOptions) {
 	config = {
 		...config,
 		onwarn: function(warning) {
@@ -54,20 +56,20 @@ export function writeNpmPkgSync(config, writeOptions) {
 			})
 		];
 	} else {
-		config.plugins = [
-			nodeResolve(),
-			commonjs(),
-			babel({
-				presets: [
-					[
-						'@babel/env',
-						{
-							modules: false
-						}
-					]
+		const babelOptions: any = {
+			presets: [
+				[
+					'@babel/env',
+					{
+						modules: false
+					}
 				]
-			})
-		];
+			]
+		};
+		config.plugins = [ nodeResolve(), commonjs(), babel(babelOptions) ];
+	}
+	if (writeOptions.minify) {
+		config.plugins.push(uglify());
 	}
 	let output = config.output;
 	let { file } = output;

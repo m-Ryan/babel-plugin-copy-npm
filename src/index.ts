@@ -12,6 +12,9 @@ export interface IOptions {
 	npmDir: string;
 	cwd?: string;
 	deep?: boolean;
+	minify?: boolean;
+	strict?: boolean;
+	format?: string;
 	envName?: string;
 	exclude: string[];
 }
@@ -112,7 +115,8 @@ function resolveModulePath(npmpkgName: string, options: INpmPkgOptions) {
 					input: inputNpmPkgPath,
 					output: {
 						file: outputNpmPkgPath,
-						format: 'umd',
+						format: options.format || 'umd',
+						strict: !!options.strict, // default false
 						name: npmpkgName
 					}
 				},
@@ -121,7 +125,8 @@ function resolveModulePath(npmpkgName: string, options: INpmPkgOptions) {
 					rootDir,
 					outputDir,
 					npmDir,
-					exclude
+					exclude,
+					minify: options.minify
 				}
 			);
 		}

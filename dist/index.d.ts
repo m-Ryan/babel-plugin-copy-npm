@@ -4,6 +4,9 @@ export interface IOptions {
     npmDir: string;
     cwd?: string;
     deep?: boolean;
+    minify?: boolean;
+    strict?: boolean;
+    format?: string;
     envName?: string;
     exclude: string[];
 }
