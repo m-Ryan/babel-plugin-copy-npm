@@ -1,10 +1,10 @@
 import * as rollup from 'rollup';
+import { uglify } from 'rollup-plugin-uglify';
 const babel = require('rollup-plugin-babel');
 const path = require('path');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 import fs from 'fs-extra';
-import { uglify } from 'rollup-plugin-uglify';
 export interface IwriteOptions {
 	deep: boolean;
 	rootDir: string;

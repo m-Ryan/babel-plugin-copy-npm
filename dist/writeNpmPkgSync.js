@@ -11,12 +11,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const rollup = __importStar(require("rollup"));
+const rollup_plugin_uglify_1 = require("rollup-plugin-uglify");
 const babel = require('rollup-plugin-babel');
 const path = require('path');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const fs_extra_1 = __importDefault(require("fs-extra"));
-const rollup_plugin_uglify_1 = require("rollup-plugin-uglify");
 function writeNpmPkgSync(config, writeOptions) {
     config = Object.assign({}, config, { onwarn: function (warning) {
             if (warning.code === 'THIS_IS_UNDEFINED') {
