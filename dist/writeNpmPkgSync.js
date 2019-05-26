@@ -65,7 +65,8 @@ function writeNpmPkgSync(config, writeOptions) {
                         modules: false
                     }
                 ]
-            ]
+            ],
+            plugins: ['transform-node-env-inline']
         };
         config.plugins = [nodeResolve(), commonjs(), babel(babelOptions)];
     }
