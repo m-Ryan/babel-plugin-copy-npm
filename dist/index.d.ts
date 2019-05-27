@@ -8,6 +8,7 @@ export interface IOptions {
     strict?: boolean;
     format?: string;
     envName?: string;
+    loose?: string;
     exclude: string[];
 }
 export default function resolveModule(types: any): {
