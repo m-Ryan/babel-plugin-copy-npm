@@ -135,9 +135,6 @@ function resolveModulePath(npmpkgName, options) {
     if (/^./.test(relativeRequirePath)) {
         relativeRequirePath = './' + relativeRequirePath;
     }
-    console.log(outputFilePath);
-    console.log(outputNpmPkgPath);
-    console.log(relativeRequirePath);
     return relativeRequirePath;
 }
 const isNpmPkg = function (name) {
