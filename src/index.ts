@@ -118,7 +118,6 @@ function resolveModulePath(npmpkgName: string, options: INpmPkgOptions) {
 			inputNpmPkgPath += `/${npmpkgName}.min.js`;
 		}
 	}
-
 	const outputNpmPkgPath = path.join(npmDirPath, `${npmpkgName}.js`);
 	if (!fs.existsSync(outputDirPath)) {
 		fs.mkdirSync(outputDirPath);
@@ -149,9 +148,11 @@ function resolveModulePath(npmpkgName: string, options: INpmPkgOptions) {
 			}
 		);
 	}
-	let relativeRequirePath = path
-		.relative(path.dirname(filename).replace(new RegExp(`\\b${rootDir}\\b`), outputDir), outputNpmPkgPath)
-		.replace(/\\/g, '/');
+	let outputFilePath = path.dirname(filename).replace(/\\/gm, '/').replace(new RegExp(`\\b${rootDir}\\b`), outputDir);
+	let relativeRequirePath = path.relative(outputFilePath, outputNpmPkgPath).replace(/\\/g, '/');
+	if (/^./.test(relativeRequirePath)) {
+		relativeRequirePath = './' + relativeRequirePath;
+	}
 	return relativeRequirePath;
 }
 

@@ -130,9 +130,14 @@ function resolveModulePath(npmpkgName, options) {
             minify: options.minify
         });
     }
-    let relativeRequirePath = path_1.default
-        .relative(path_1.default.dirname(filename).replace(new RegExp(`\\b${rootDir}\\b`), outputDir), outputNpmPkgPath)
-        .replace(/\\/g, '/');
+    let outputFilePath = path_1.default.dirname(filename).replace(/\\/gm, '/').replace(new RegExp(`\\b${rootDir}\\b`), outputDir);
+    let relativeRequirePath = path_1.default.relative(outputFilePath, outputNpmPkgPath).replace(/\\/g, '/');
+    if (/^./.test(relativeRequirePath)) {
+        relativeRequirePath = './' + relativeRequirePath;
+    }
+    console.log(outputFilePath);
+    console.log(outputNpmPkgPath);
+    console.log(relativeRequirePath);
     return relativeRequirePath;
 }
 const isNpmPkg = function (name) {

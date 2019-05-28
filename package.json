@@ -1,12 +1,12 @@
 {
   "name": "babel-plugin-copy-npm",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "babel-plugin-copy-npm",
   "main": "dist/index.js",
   "author": "mRyan",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && yarn test",
     "test": "cross-env NODE_ENV=production node example/rollup.config.js"
   },
   "dependencies": {
