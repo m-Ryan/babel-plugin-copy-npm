@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-copy-npm",
-  "version": "0.1.7",
+  "version": "0.2.1",
   "description": "babel-plugin-copy-npm",
   "main": "dist/index.js",
   "author": "mRyan",
@@ -38,6 +38,7 @@
   ],
   "devDependencies": {
     "@types/babel-types": "^7.0.7",
+    "@types/fs-extra": "^7.0.0",
     "cross-env": "^5.2.0",
     "dayjs": "^1.8.14"
   }

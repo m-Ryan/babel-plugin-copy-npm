@@ -10,6 +10,7 @@ export interface IOptions {
     envName?: string;
     loose?: string;
     exclude: string[];
+    cache: boolean;
 }
 export default function resolveModule(types: any): {
     name: string;

@@ -17,6 +17,9 @@ const writeNpmPkgSync_1 = require("./writeNpmPkgSync");
 const t = __importStar(require("babel-types"));
 const cacheNpmPkgMap = {};
 const ROLLUP_HELPER = 'rollupPluginBabelHelpers.js';
+const CACHE_NPM_FILE = path_1.default.join(process.cwd(), '.cache-npm');
+let cacheNpmData = [];
+let hasReadCacheFile = false;
 function resolveModule(types) {
     const PLUGIN_NAME = 'babel-plugin-copy-npm';
     let options;
@@ -24,16 +27,33 @@ function resolveModule(types) {
         name: PLUGIN_NAME,
         pre(file) {
             const { filename, envName, cwd } = file.opts;
-            const plugin = file.opts.plugins.find((item) => item.key === PLUGIN_NAME);
+            const pluginOptions = file.opts.plugins.find((item) => item.key === PLUGIN_NAME).options;
             options = Object.assign({ filename,
                 envName,
-                cwd }, plugin.options);
+                cwd }, pluginOptions);
+            if (pluginOptions.cache && !hasReadCacheFile) {
+                hasReadCacheFile = true;
+                if (!fs_extra_1.default.existsSync(CACHE_NPM_FILE)) {
+                    fs_extra_1.default.writeFileSync(CACHE_NPM_FILE, '[]');
+                    cacheNpmData = [];
+                }
+                else {
+                    try {
+                        cacheNpmData = JSON.parse(fs_extra_1.default.readFileSync(CACHE_NPM_FILE, 'utf8'));
+                        cacheNpmData.forEach((item) => {
+                            cacheNpmPkgMap[item.name] = true;
+                        });
+                    }
+                    catch (error) {
+                        throw new Error('读取缓存出错，请删除根目录下的.cache-npm');
+                    }
+                }
+            }
         },
         visitor: {
             ImportDeclaration(path) {
                 let npmPkgName = path.node.source.value;
                 const specifiers = path.node.specifiers;
-                const name = path.node.specifiers[0].local.name;
                 if (npmPkgName.includes(ROLLUP_HELPER)) {
                     return;
                 }
@@ -44,12 +64,18 @@ function resolveModule(types) {
                         return;
                     }
                     let importNode = '';
-                    if (!t.isImportDefaultSpecifier(specifiers[0])) {
-                        const params = specifiers.join(',');
-                        importNode = template_1.default.statement.ast `var { ${params} } = require("${npmPkgName}")`;
+                    if (specifiers.length === 0) {
+                        importNode = template_1.default.statement.ast `require("${npmPkgName}")`;
                     }
                     else {
-                        importNode = template_1.default.statement.ast `var ${name} = require("${npmPkgName}")`;
+                        const name = path.node.specifiers[0].local.name;
+                        if (!t.isImportDefaultSpecifier(specifiers[0])) {
+                            const params = specifiers.join(',');
+                            importNode = template_1.default.statement.ast `var { ${params} } = require("${npmPkgName}")`;
+                        }
+                        else {
+                            importNode = template_1.default.statement.ast `var ${name} = require("${npmPkgName}")`;
+                        }
                     }
                     path.replaceWith(importNode);
                 }
@@ -81,13 +107,15 @@ function resolveModulePath(npmpkgName, options) {
     const packageJson = path_1.default.join(inputNpmPkgPath, 'package.json');
     if (fs_extra_1.default.existsSync(packageJson)) {
         const main = require(packageJson).main;
-        const mainEntry = path_1.default.join(inputNpmPkgPath, main);
-        const mainEntryWithIndexJS = path_1.default.join(inputNpmPkgPath, main + '.js');
-        if (fs_extra_1.default.existsSync(mainEntry)) {
-            inputNpmPkgPath = path_1.default.join(inputNpmPkgPath, main);
-        }
-        else if (fs_extra_1.default.existsSync(mainEntryWithIndexJS)) {
-            inputNpmPkgPath = path_1.default.join(inputNpmPkgPath, main + '.js');
+        if (main) {
+            const mainEntry = path_1.default.join(inputNpmPkgPath, main);
+            const mainEntryWithIndexJS = path_1.default.join(inputNpmPkgPath, main + '.js');
+            if (fs_extra_1.default.existsSync(mainEntry)) {
+                inputNpmPkgPath = path_1.default.join(inputNpmPkgPath, main);
+            }
+            else if (fs_extra_1.default.existsSync(mainEntryWithIndexJS)) {
+                inputNpmPkgPath = path_1.default.join(inputNpmPkgPath, main + '.js');
+            }
         }
     }
     else {
@@ -113,6 +141,13 @@ function resolveModulePath(npmpkgName, options) {
     }
     if (!cacheNpmPkgMap[npmpkgName]) {
         cacheNpmPkgMap[npmpkgName] = true;
+        if (options.cache) {
+            cacheNpmData.push({
+                name: npmpkgName,
+                time: new Date().toLocaleString()
+            });
+            fs_extra_1.default.writeFile(CACHE_NPM_FILE, JSON.stringify(cacheNpmData));
+        }
         writeNpmPkgSync_1.writeNpmPkgSync({
             input: inputNpmPkgPath,
             output: {
