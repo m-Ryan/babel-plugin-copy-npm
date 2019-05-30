@@ -29,12 +29,19 @@ babel({
 		],
 	],
 	"plugins": [
-		["babel-plugin-copy-npm", {
-			"rootDir": "src",
-			"outputDir": "dist",
-			"npmDir": "npm",
-			"exclude": []
-		}, ]
+		[
+			'babel-plugin-copy-npm',
+			{
+				rootDir: 'src',
+				outputDir: 'dist',
+				npmDir: 'npm',
+				format: 'cjs',
+				strict: false,
+				minify: true,
+				loose: true,
+				cache: true
+			}
+		]
 	]
 }
 )
